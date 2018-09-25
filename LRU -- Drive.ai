@@ -1,0 +1,125 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
+/*
+We will be implementing a least recently used (LRU) cache.
+
+The main idea is to have a cache of fixed size which stores key object pairs.  If a new key object pair is pushed
+while the cache is full, then the least recently used object must be deleted.  If an object is
+accessed, then it moves to the front of the cache.
+
+For example:
+
+Pumping in key object pairs.
+ 1,2,3,4,5
+ |
+ V
+[5,4,3,2,1]
+
+ 6
+ |
+ V
+[6,5,4,3,2]
+
+[6,5,4,3,2] -> 3
+
+[3,6,5,4,2]
+*/
+
+using namespace std;
+
+struct Object{
+    double value;
+};
+
+struct Node{
+    Object object;
+    int key;
+    Node* next;
+    Node* prev;
+};
+
+class LruCache{
+  public:
+    
+    LruCache(size_t capacity){
+      max_size = capacity;
+      //head(new Node);
+      //tail(new Node);
+      head->next = tail;
+      tail->prev = head;
+      size = 0;
+    }
+    
+    void Push(int key, Object object){
+        Node* temp = head->next;
+        Node* newNode = new Node;
+        newNode->key = key;
+        newNode->object = object;
+        AddNodeToFront(newNode);
+        m.emplace(key, newNode);
+        size++;
+        if(size == 1) tail = newNode;
+        if(size > max_size){
+            m.erase(tail->key);
+            temp = tail->prev;
+            temp->next = nullptr;
+        }
+    }
+    
+    Object Get(int key){
+        Node* temp = m[key];
+        Node* prev = temp->prev;
+        Node* after = temp->next;
+        prev->next = after;
+        after->prev = prev;
+        AddNodeToFront(temp);
+        return temp->object;
+    }
+    
+  private:
+  
+    void AddNodeToFront(Node* new_node){
+        Node* temp = head->next;
+        head->next = new_node;
+        new_node->next = temp;
+        new_node->prev = head;
+        temp->prev = new_node;
+    }
+    
+    Node* head = new Node;
+    Node* tail = new Node;
+    unordered_map<int, Node*> m;
+    int size = 0, max_size;
+};
+
+int main() {
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */
+    LruCache cache(5);
+    Object object;
+    object.value = 1.0;
+    cache.Push(1, object);
+    std::cout << cache.Get(1).value << std::endl;
+    
+    object.value = 2.0;
+    cache.Push(2, object);
+    object.value = 3.0;
+    cache.Push(3, object);
+    object.value = 4.0;
+    cache.Push(4, object);
+    object.value = 5.0;
+    cache.Push(5, object);
+    object.value = 6.0;
+    cache.Push(6, object);
+    std::cout << cache.Get(3).value << std::endl;
+    
+    
+    std::cout << cache.Get(4).value << std::endl;
+    std::cout << cache.Get(5).value << std::endl;
+    std::cout << cache.Get(6).value << std::endl;
+    std::cout << cache.Get(3).value << std::endl;
+    
+    return 0;
+}
