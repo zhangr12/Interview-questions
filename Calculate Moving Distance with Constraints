@@ -1,0 +1,57 @@
+TuSimple Online Interview
+Candidate name: Ruochuan Zhang
+Scheduled time: 09/27/2018 11:00 UTC+0800
+
+// hello
+
+p = 0, v = 1m/s
+vector<pair<int, int>> v1 = {(3, 2), ( ),...}   3s, v->2m/s; 4s, v->6m/s;
+vector<pair<int, int>> v2 = {(2, 5), (7, 3),...}   2m, v->5m/s; 7m, v->3m/s;
+int t=5;
+t = 2, v = 5, p = 2
+
+
+p = ?;
+
+// m is index of v1, n is index of v2
+int m = 0, n = 0, crt_speed = 1;
+double position = 0, time = 0;
+while(m < v1.size() || n < v2.size()){
+    int run_time;
+    if(m == v1.size()){
+        run_time = min(t-time, (v2[n].first - position)/double(crt_speed));
+        position += crt_speed*run_time;
+        crt_speed = v2[n].second;
+        n++;
+        time += run_time;
+        if(time == t) break;
+    }
+    else if(n == v2.size()){
+        run_time = min(t-time, v1[m].first-time);
+        position += crt_speed*run_time;
+        crt_speed = v1[m].second;
+        m++;
+        time += run_time;
+        if(time == t) break;
+    }
+    else{
+        int v1_t = v1[m].first-time, v2_t = (v2[n].first - position)/crt_speed;
+        run_time = min(t - time, min(v1_t, v2_t));
+    
+        position += crt_speed*run_time;
+        if(run_time == t-time){
+            break;
+        }
+        else if(v1_t > v2_t){
+            crt_speed = v2[n].second;
+            n++;
+        }
+        else{
+            crt_speed = v1[m].second;
+            m++;
+        }
+        time += run_time;
+        if(time == t) break;
+    }
+}
+if(time < t) position += crt_speed*(t - time);
