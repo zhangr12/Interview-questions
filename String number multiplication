@@ -1,0 +1,91 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+
+// int, double  fixed-sized
+// string "3.141516"
+
+// multiply("123", "45")  gives us 123*45 = 5535, so it returns "5535"
+// positive, negative numbers "-123" * "-45" = "5535", 
+// string multiply(const string& s1, const string& s2) {
+//}
+
+string multiply(const string& s1, const string& s2){
+  int n1 = s1.size(), n2 = s2.size();
+  
+  vector<vector<int>> mid;
+  // start from the right of the string
+  for(int i = n1-1; i >= 0; i--){
+    // current digit from s1 is digit1
+    int carry = 0, digit1 = s1[i]-'0';
+    // use temp to store the intermidiate result
+    vector<int> temp;
+    for(int j = n2-1; j >= 0; j--){
+      // current digit from s2 is digit2
+      int digit2 = s2[j] -'0';
+      
+      int sum = digit1*digit2 + carry;
+      
+      carry = sum/10;
+      // the least significant number is on the left
+      temp.push_back(sum%10);
+    }
+    // check carry
+    if(carry) temp.push_back(carry);
+    
+    mid.push_back(temp);
+  }
+  
+  // now res has all the intermidiate numbers we need to calculate the multiplication, now we add these numbers together with shift
+  // use mid[0] as a base
+  vector<int> res = mid[0];
+  // plus + shift
+  for(int i = 1; i < mid.size(); i++){
+    // shift res[i] to right by i
+    
+    
+    // assume i is less than idxRes
+    
+    
+    int carry = 0, idxRes = i, idxCrt = 0;
+    while(idxRes < res.size() && idxCrt < mid[i].size()){
+      int temp = res[idxRes] + mid[i][idxCrt] + carry;
+      res[idxRes] = temp%10;
+      carry = temp/10;
+      idxRes++;
+      idxCrt++;
+    }
+    while(idxRes < res.size()){
+      int temp = res[idxRes] + carry;
+      res[idxRes] = temp%10;
+      carry /= temp;
+      idxRes++;
+    }
+    while(idxCrt < mid[i].size()){
+      int temp = mid[i][idxCrt] + carry;
+      res.insert(res.begin() + idxCrt+i, temp%10);
+      carry /= temp;
+      idxCrt++;
+    }
+    if(carry) res.push_back(1);
+  }
+  cout << res.size() << endl;
+  string result = "";
+  for(int i = res.size()-1; i >= 0; i--) result += (res[i] + '0');  // (4)
+  
+  return result;
+}
+
+
+// To execute C++, please define "int main()"
+int main() {
+  string s1 = "123";
+  string s2 = "456";
+  string s3 = multiply(s1, s2);
+  cout << s1 << " times " << s2 << " equals " << s3 << endl;
+  cout << "end" << endl;
+  
+  
+  return 0;
+}
