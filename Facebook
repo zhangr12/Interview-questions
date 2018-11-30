@@ -1,0 +1,120 @@
+// Two sparse vectors
+// A = [a1, a2, ...., an]
+// B = [b1, b2, ...., bn]
+
+// dot product  = i = 1 to n sum (ai * bi)
+
+// 1. Efficient memory representation
+// 2. do the dot product using the efficient representation
+
+// A = [1, 0, 0, 0, 5] -> vector<pait<int, int>> q ((0, 1), (4, 5))
+// B = [2, 0, 0, 0, 0] -> ((0, 2))
+// (0, 1)
+// (0, 2)
+// 2
+// (4, 5)
+
+int dotProduct(const vector<int> &A, const vector<int> &B){
+  int res = 0;
+  vector<pair<int, int>> sA, sB;
+  // sA: sparse A
+  // sB: sparse B
+  for(int i = 0; i < A.size(); i++){
+    if(A[i] != 0) sA.push_back({i, A[i]});
+    if(B[i] != 0) sB.push_back({i, B[i]});
+  }
+  
+  int iA = 0, iB = 0;
+  while(iA < sA.size() && iB < sB.size()){
+    if(sA[iA].first == sB[iB].first){
+      res += sA[iA].second*sB[iB].second;
+      iA++;
+      iB++;
+    }
+    else if(sA[iA].first < sB[iB].first){
+      iA++;
+    }
+    else{
+      iB++;
+    }
+  }
+  return res;
+}
+
+
+
+
+// A is more sparse than B
+int dotProduct(const vector<int> &A, const vector<int> &B){
+  int res = 0;
+  vector<pair<int, int>> sA;
+  unordered_map<int, int>> sB;
+  // sA: sparse A
+  // sB: sparse B
+  for(int i = 0; i < A.size(); i++){
+    if(A[i] != 0) sA.push_back({i, A[i]});
+    if(B[i] != 0) sB[i] = B[i];
+  }
+  // A is length N1
+  // B is length N2
+  // time complexity: N1
+  for(auto it:sA){
+    res += it.second*sB[it.first];
+  }
+  return res;
+}
+
+
+
+
+// second version
+int dotProduct(const vector<int> &A, const vector<int> &B){
+  int res = 0;
+  vector<pair<int, int>> sA, sB;
+  // sA: sparse A
+  // sB: sparse B
+  for(int i = 0; i < A.size(); i++){
+    if(A[i] != 0) sA.push_back({i, A[i]});
+    if(B[i] != 0) sB.push_back({i, B[i]});
+  }
+  
+  // A: N1
+  // B: N2
+  // time complexity: O(N1log(N2))
+  for(auto item:sA){
+    // binarySearch helps us to find the lower_bound of pair value
+    auto idx = binarySearch(sB.begin(), sB.end(), item.first);
+    if(sB[idx].first == item.first) res += sB[idx].second*item.second;
+  }
+  
+  return res;
+}
+
+
+
+// 2. Find the moving average of an array
+// A = [a1, a2, ....., an]
+// k = window size
+// R = [r1, r2, ....,  rn]
+
+// vector<int> res
+// use temp to store current summary of numbers
+// we add new numbers to temp every step
+// we only substract numbers to temp if i - windowSize >= 0
+
+vector<double> movingAverage(vector<double> &A, int windowSize){
+  int n = A.size(), temp = 0, crtWindowSize = 0;
+  vector<double> res(n, 0);
+  
+  for(int i = 0; i < n; i++){
+    temp += A[i];
+    crtWindowSize = min(crtWindowSize+1, windowSize);
+    if(i-windowSize >= 0) temp -= A[i-windowSize];
+    res[i] = temp/crtWindowSize;
+  }
+  
+  return res;
+  
+}
+
+
