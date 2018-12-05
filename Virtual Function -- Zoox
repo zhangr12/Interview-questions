@@ -1,0 +1,197 @@
+/*
+We are working on a batch image processing pipeline. We want to be able to list
+the operations to be applied on all the images (and their parameters) in a
+config file. For example:
+
+ConvertToGrayScale
+Blur 3.1
+Resize 256 256
+BlendWith http://www.solstation.com/stars/earth3au.jpg
+
+The idea is to load the config file, create the pipeline, and process all the
+images through the pipeline. We have access to a library for image manipulation
+(in the ImgLib namespace below) that has all the functions that we need for
+those operations.
+
+How would you design such a pipeline?
+
+Keep in mind that you have 40 minutes, so you are encouraged to first go for
+a decently simple solution, and then discuss extensions.
+
+In this case we will mock the behavior of image loading and image processing
+with print statements. This is because we don't have IO in coderpad.
+
+Also in this case we have 4 commands and 3 images, but think that in reality
+there could be a lot more images and commands.
+*/
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+using namespace std;
+
+// Mock image class.
+// Do not modify.
+class Image {
+public:
+  Image (const string& name) : name_(name) {}
+  const string& name() const { return name_; }
+private:
+  string name_;
+};
+
+
+// Mock image manipulation library.
+// Do not modify.
+namespace ImgLib {
+
+void convertToGrayScale (Image & img) {
+  cout << img.name() << ": Converting to gray scale" << endl;
+}
+
+void blur (Image & img, float factor) {
+  cout << img.name() << ": Blurring with factor " << factor << endl;
+}
+
+void resize (Image & img, int x, int y) {
+  cout << img.name() << ": Resizing img with x = " << x << " and y = " << y << endl;
+}
+
+void blend (Image & img, const Image& other) {
+  cout << img.name() << ": Blending with " << other.name() << endl;
+}
+
+// ******************************************************************
+// *                                                                *
+// *  NOTE: There are at least 1000 additional functions.           *
+// *  The rest have been omitted due to the scope of the exercise.  *
+// *                                                                *
+// ******************************************************************
+
+} // namespace ImgLib
+
+
+// Forward declaration of the process function that you have to write (below).
+void process(const vector<string>& cmds, vector<Image>& imgs);
+
+// Simple main to allow testing the process function.
+int main() {
+  // The "config file".
+  // These commands are guaranteed to be error-free and are assumed to
+  // be space delimited, with the first word being a command idenifier.
+  // The arguments to each command are always of the same types.
+  // Because coderpad does not have IO, we store an example config file
+  // in a string format directly. This is a simple config file to let us
+  // test the process function with a small number of operations.
+  // Assume that the Image class constructor will take care of downloading
+  // and loading the blend image used in the BlendWith operation.
+  vector<string> operations = {"ConvertToGrayScale",
+                               "Blur 3.1",
+                               "Resize 256 256",
+                               "BlendWith http://www.solstation.com/stars/earth3au.jpg"};
+
+  // The images to process.
+  // This is a small number of images to allow testing the process function.
+  // Again stored in memory as mock images because we don't have IOs.
+  vector<Image> imgs = {Image ("one"),
+                        Image ("two"),
+                        Image ("three")};
+
+  process(operations, imgs);
+
+  return 0;
+}
+
+
+// class Shape {
+// public:
+//   void makeNoise() {
+//     printf("NOISE!\n");
+//   }
+// }
+
+// class Triangle : public Shape {
+// public:
+//   void makeNoise() {
+//     printf("ANOTHER NOISE!\n");
+//   }
+// }
+
+// Shape* shape_obj = new Triangle();
+
+// shape_obj->makeNoise();
+
+
+
+// Your work goes here
+class AbstractOperation {
+public:
+  virtual ~AbstractOperation() = default;
+  virtual void execute(Image& image) = 0;
+};
+
+
+// class Blur : public AbstractOperation {
+//   Blur(float factor) : factor_(factor) {}
+
+//   void execute(Image& image) {
+//     blur(image, factor);
+//   }
+  
+// private:
+//   float factor_;
+// }
+
+// string the_string = "abc 2";
+// stringstream ss(the_string);
+// string token1;
+// int token2;
+// ss >> token1;
+// ss >> token2;
+using namespace ImgLib;
+void singleImgProcess(Image &img, const vector<string> &operations){
+  // vector<AbstractOperation*> parsed_operations;
+  for(auto operation:operations){
+    stringstream ss(operation);
+    string op;
+    ss >> op;
+    if(op == "ConvertToGrayScale"){
+      convertToGrayScale(img);
+    }
+    else if(op == "Blur"){
+      float f;
+      ss >> f;
+      blur(img, f);
+    }
+    else if(op == "Resize"){
+      int n1, n2;
+      ss >> n1;
+      ss >> n2;
+      resize(img, n1, n2);
+      // parsed_operations.push_back( new Resize(n1, n2) );
+    }
+    else if(op == "BlendWith"){
+      string address;
+      ss >> address;
+      blend(img, address);
+    }
+  }
+  
+  // for (const auto op: parsed_operations) {
+  //   op->execute(img);
+  // }
+  return;
+}
+
+
+
+// assume the mapping from the function name in the config file to the function name in the ImgLib is stored in m<cinfig name, ImgLib name>
+void process(const vector<string>& operations, vector<Image>& imgs) {
+  for(auto img:imgs){
+    singleImgProcess(img, operations);
+  }
+  return;
+}
+
+
