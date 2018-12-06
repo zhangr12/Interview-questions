@@ -1,0 +1,68 @@
+1, 3, 5, 7, 9
+
+idx, len
+1, 3         ->    1 7 5 3 9
+4, 3         ->    1 9 5 7 3
+
+
+// n = A.size();
+// l = idx
+// r = (idx + len-1)%n
+
+void flipSort(vector<int> &A, int idx, int len){
+	int n = A.size(), l = idx;
+	int r = (idx + len - 1)%;
+	int swap_num = len/2;
+	for(int i = 0; i < swap_num; i++){
+		swap(A[l], A[r]);
+		if(l == n-1){
+			l = 0;
+		}
+		else{
+			l++;
+		}
+		if(r == 0){
+			r = n-1;
+		else{
+			r--;
+		}
+}
+}
+
+
+
+N x_i, y_i integer, [-10^4, 10^4]]\
+score_i integer + -
+
+centered at (0,0)
+
+// x_i, y_i -> square of distance to (0, 0)
+// we have some points on the x axis, each point has a score.
+// find a interval from [0, R] which maximize the score inside the interval
+
+
+/*
+static bool compare(vector<int> &v1, vector<int> &v2){
+	return v1[0] < v2[0];
+}
+*/
+// vector<int>: {x, y, score}
+int maxScore(vector<vector<int>> &points){
+	int n = points.size();
+	map<int, int> m;
+	for(int i = 0; i < n; i++){
+		m[points[i][0]*points[i][0] + points[i][1]*points[i][1]] += points[i][3];
+}
+// sort(v.begin(), v.end(), compare);
+int res = INT_MIN, temp = 0;
+for(auto p:m){
+	temp += p.second;
+	if(temp > res) res = temp;
+}
+if(res < 0){
+	auto it = m.begin();
+	if(it.first != 0) return 0;
+	return res;
+}
+return res;
+}
