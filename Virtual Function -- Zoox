@@ -1,3 +1,20 @@
+Skip to content
+ 
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ @zhangr12 Sign out
+1
+0 0 zhangr12/Interview-questions
+ Code  Issues 0  Pull requests 0  Projects 0  Wiki  Insights  Settings
+Interview-questions/Virtual Function -- Zoox
+0d9866b  8 days ago
+@zhangr12 zhangr12 Create Virtual Function -- Zoox
+     
+198 lines (156 sloc)  5.31 KB
 /*
 We are working on a batch image processing pipeline. We want to be able to list
 the operations to be applied on all the images (and their parameters) in a
@@ -131,17 +148,25 @@ public:
   virtual void execute(Image& image) = 0;
 };
 
+class Blur : public AbstractOperation {
+	Blur(float factor) : factor_(factor) {}
 
-// class Blur : public AbstractOperation {
-//   Blur(float factor) : factor_(factor) {}
-
-//   void execute(Image& image) {
-//     blur(image, factor);
-//   }
+    void execute(Image& image) {
+        blur(image, factor);
+    }
   
-// private:
-//   float factor_;
-// }
+private:
+	float factor_;
+}
+////////////////////////////////////
+// define Blur as a subclass of AbstractOperation
+// Note that AbstractOperation is a abstract class, so we can have pointers and references of AbstractOperation class
+// next we need to define a vector<AbstractOperation*>, then push pointer of subclass(like Blur) to the vector
+////////////////////////////////////
+
+
+
+
 
 // string the_string = "abc 2";
 // stringstream ss(the_string);
@@ -195,3 +220,16 @@ void process(const vector<string>& operations, vector<Image>& imgs) {
 }
 
 
+© 2018 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Press h to open a hovercard with more details.
