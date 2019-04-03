@@ -58,17 +58,18 @@ public:
 		cout << "Shared pointer default constructor..." << endl;
 	}
 	// normal constructor
+  // here we use pointer but not reference because new operator returns a pointer
 	SP(T *t){
-		cout << "Normal constructor..." << endl;
+		cout << "Normal constructor(pointer)..." << endl;
 		m_t = t;
 		m_reference = new RC();
 		m_reference->Add();
 	}
 	// copy constructor
-	SP(const SP<T> *P){
+	SP(const SP<T> &P){
 		cout << "Copy constructor..." << endl;
-		m_t = P->m_t;
-		m_reference = P->m_reference;
+		m_t = P.m_t;
+		m_reference = P.m_reference;
 		m_reference->Add();
 	}
 	// assignment operator
@@ -114,13 +115,15 @@ int main(){
 	{
 		cout << "enter scope..." << endl;
 		SP<People> p2(new People("John", 23));
+		p2->Display();
 		p1=  p2;
 		cout << "out of scope..." << endl;
 	}
 	
 	p1->Display();
-	
-	return 0;
+
+  return 0;
 }
+
 
 
