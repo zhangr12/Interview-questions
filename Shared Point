@@ -9,11 +9,11 @@ private:
 	int m_age;
 public:
 	People(): m_name(""), m_age(0){
-		cout << "Default constructor..." << endl;
+		cout << "People default constructor..." << endl;
 	}
 	
 	People(string name, int age){
-    cout << "Normal constructor..." << endl;
+    cout << "People normal constructor..." << endl;
 		m_name = name;
 		m_age = age;
 	}
@@ -58,6 +58,7 @@ public:
     //m_reference->Add();
   }
   SP(T *t){
+    cout << "Normal constructor..." << endl;
     m_t = t;
     m_reference = new RC();
     m_reference->Add();
