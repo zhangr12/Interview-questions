@@ -1,0 +1,128 @@
+// shared pointer
+#include <iostream>
+
+using namespace std;
+
+class People{
+private:
+	string m_name;
+	int m_age;
+public:
+	People(): m_name(""), m_age(0){
+		cout << "Default constructor..." << endl;
+	}
+	
+	People(string name, int age){
+    cout << "Normal constructor..." << endl;
+		m_name = name;
+		m_age = age;
+	}
+	
+	void Display(){
+		cout << m_name << " " << m_age << endl;
+	}
+	
+	~People(){
+		cout << "Destructor..." << endl;
+	}
+};
+
+// Reference counting
+class RC{
+private:
+  int count;
+public:
+  RC():count(0){}
+  void Add(){
+    ++count;
+  }
+  void Minus(){
+    --count;
+  }
+  int getNum(){
+    return count;
+  }
+};
+
+
+template<class T>
+class SP{
+private:
+  T *m_t;
+  RC *m_reference;
+public:
+  SP(){
+    cout << "Default constructor..." << endl;
+    m_t = 0;
+    m_reference = new RC();
+    //m_reference->Add();
+  }
+  SP(T *t){
+    m_t = t;
+    m_reference = new RC();
+    m_reference->Add();
+  }
+  // copy constructor
+  SP(const SP<T> &P){
+    cout << "Copy constructor..." << endl;
+    m_t = P.m_t;
+    m_reference = P.m_reference;
+    m_reference->Add();
+  }
+
+  // Overload assignmenr operator
+  SP<T>& operator=(const SP<T> &P){
+    cout << "Assignment operator..." << endl;
+    if(this != &P){
+      m_reference->Minus();
+      if(m_reference->getNum() <= 0 && m_t){
+        cout << "Delete current object so that we can assign new object to the pointer..." << endl;
+        delete m_t;
+        delete m_reference;
+      }
+      cout << "Assign new object to the pointer..." << endl;
+      m_t = P.m_t;
+      m_reference = P.m_reference;
+      m_reference->Add();
+    }
+    else{
+      cout << "Cannot assign a object to itself..." << endl;
+    }
+    return *this;
+  }
+
+
+  ~SP(){
+    cout << m_reference->getNum() << endl;
+    cout << "Shared pointer destructor..." << endl;
+    m_reference->Minus();
+    cout << m_reference->getNum() << endl;
+    if(m_reference->getNum() == 0){
+      cout << "Delete the object..." << endl;
+      delete m_t;
+      delete m_reference;
+    }
+  }
+  // Dereferencing
+  T& operator*(){
+    return *m_t;
+  }
+  // Indirection
+  T* operator->(){
+    return m_t;
+  }
+};
+
+
+int main(){
+	SP<People> p1;
+	cout << "enter the scope..." << endl;
+	{
+    SP<People> p2(new People("John", 23));
+    p1 = p2;
+  }
+  cout << "out the scope..." << endl;
+  p1->Display();
+
+	return 0;
+}
